@@ -28,21 +28,26 @@ final_message= '''
 
 async def text_func(dp: Dispatcher):
     premium_users = DBConn.TextsTaskAt10AM()
-    print(premium_users)
     for user in premium_users:
         indexes = user.get('indexes')
         texts = DBRepository.GetTextsByIndex(indexes[0], indexes[1])
         for text in texts:
-            await bot.send_message(
-            user.get('external_id'),
-            text
-        )
+            try:
+                await bot.send_message(
+                user.get('external_id'),
+                text
+            )
+            except :
+                ...
         if DBConn.CheckSubscriptionIsOver(user.get('external_id')):
-            await bot.send_message(
+            try:
+                await bot.send_message(
             user.get('external_id'),
             final_message,
             parse_mode='html'
-        )
+            )
+            except:
+                ...
         DBConn.IncrementSentTexts(user.get('external_id'))
         
         
@@ -51,16 +56,14 @@ async def video_func(dp: Dispatcher):
     for user in premium_users:
         index = user.get('index')
         video_index= DBRepository.GetVideoIndex(index)
-        print(video_index)
         if (video_index!=-1):
             try:
-                pass
-            except Exception as e:
-                raise e
-            await bot.send_video(
-            user.get('external_id'),
-            video=types.InputFile(PATH.parent.joinpath('Videos').joinpath(f'{video_index+1}.mov')),
-            caption=VIDEO_TEXTS[video_index]
-        )
+                await bot.send_video(
+                user.get('external_id'),
+                video=types.InputFile(PATH.parent.joinpath('Videos').joinpath(f'{video_index+1}.mov')),
+                caption=VIDEO_TEXTS[video_index]
+            )
+            except:
+                ...
         DBConn.IncrementSentVideo(user.get('external_id'))
     
