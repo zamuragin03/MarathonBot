@@ -3,7 +3,6 @@ from aiogram import Dispatcher, types
 from DB import DBConn, DBRepository
 from Config import scheduler, dp, bot, PATH, VIDEO_TEXTS
 
-
 def schedule():
     scheduler.add_job(video_func, 'cron', hour=14, args=(dp,), misfire_grace_time=1000)
     scheduler.add_job(text_func, 'cron', hour=10, args=(dp,), misfire_grace_time=1000)

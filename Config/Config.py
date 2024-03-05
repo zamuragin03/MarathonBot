@@ -17,7 +17,16 @@ scheduler = AsyncIOScheduler()
 logger = logging.getLogger(__name__)
 logging.basicConfig(filename="debug.log", filemode="w", level=logging.DEBUG,
                     format='%(asctime)s - %(levelname)s - %(message)s', )
+import pytz
+desired_timezone = 'Europe/Moscow'
+timezone_obj = pytz.timezone(desired_timezone)
 
+import os
+import time
+
+# Set your desired timezone (e.g., Europe/Moscow for UTC+3)
+os.environ['TZ'] = 'Europe/Moscow'
+time.tzset()
 
 VIDEO_TEXTS =[
     '''
