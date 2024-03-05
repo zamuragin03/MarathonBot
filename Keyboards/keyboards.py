@@ -64,3 +64,14 @@ def payment_link_kb(url):
         ]
     )
     return markup
+
+def admin_action_kb():
+    user_actions_kb = ReplyKeyboardMarkup(
+        one_time_keyboard=False, resize_keyboard=True)
+    user_options=[
+        'Посмотреть всех пользователей',
+        ]
+    for option in user_options:
+        btn = KeyboardButton(text=option)
+        user_actions_kb.add(btn)
+    return user_actions_kb

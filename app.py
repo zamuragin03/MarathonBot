@@ -1,24 +1,23 @@
 from aiogram import executor, Dispatcher, types
+from aiogram.dispatcher import filters
 from Config import dp, scheduler, bot, PATH, PAYMENT_KEY
 from Keyboards import *
 from Workers import schedule
 from DB import DBConn
 from asyncio import sleep
-
-
-
-
+from States import FSMAdmin
+ADMINS = [225529144,619264716,881686487]
 
 @dp.message_handler(commands='start', state='*')
 async def channel_list(message: types.Message):
     code = message.get_args()
     if code==PAYMENT_KEY:
-        DBConn.StartPremium(message.from_user.id)
         DBConn.CreateUser(message.from_user.id,
                         message.from_user.username,
                         message.from_user.first_name,
                         message.from_user.last_name
                         )
+        DBConn.StartPremium(message.from_user.id)
         start_message = '''
 Привет, меня зовут Ирина Глушкова👋
 
@@ -108,6 +107,30 @@ https://youtube.com/shorts/ETiPUgjwWUw?si=r6serbsvL6sFp4pM
         call.from_user.id,
         video_note=types.InputFile(PATH.parent.joinpath('Circles').joinpath('2.mp4'))
     )
+    
+@dp.message_handler(commands='admin', state='*')
+async def channel_list(message: types.Message):
+    if message.from_user.id not in ADMINS:
+        return
+    await bot.send_message(
+        message.from_user.id,
+        'Здравствуйте, выберите действие',
+        reply_markup=admin_action_kb()
+    )
+    await FSMAdmin.choosing_action.set()
+    
+        
+        
+@dp.message_handler(filters.Text(equals='Посмотреть всех пользователей'), state=FSMAdmin.choosing_action)
+async def channel_list(message: types.Message):
+    res_text=  DBConn.GetStatisticForAdmin()
+    await bot.send_message(
+        message.from_user.id,
+        res_text
+    )
+    await FSMAdmin.choosing_action.set()
+        
+
 
 if __name__ == '__main__':
     print('started')

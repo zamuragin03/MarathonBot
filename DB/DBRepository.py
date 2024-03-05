@@ -153,7 +153,15 @@ WHERE user_id = {user_id}
             return res[day]
         except:
             return -1
-        
+
+    def SentVideosCount(day):
+        if day in [1,2,3]:
+            return 1
+        if day in [4,5,6,7]:
+            return 1
+        if day in [8,9,10,11]:
+            return 2
+        return 0
     def CheckSubscriptionIsOver(self, external_id):
         over_cur = self.db.cursor()
         over_query = f'''
@@ -163,4 +171,16 @@ where premium.sent_texts_count=13 and users.external_id={external_id}
         '''
         return len(over_cur.execute(over_query).fetchone())!=0
 
+    def GetStatisticForAdmin(self,):
+        stat_query ='''
+SELECT * FROM premium
+INNER JOIN users on users.id=premium.user_id
+        '''
+        stat_cur = self.db.cursor()
+        res =  stat_cur.execute(stat_query).fetchall()
+        text= f'Всего пользователей: {len(res)}\n'
+        for id, user in enumerate(res):
+            formatted_date = datetime.utcfromtimestamp(int(user[4])).strftime('%Y-%m-%d %H:%M:%S')
+            text+=f'{id+1}. @{user[7]}: {user[8]} {user[9]} \nДата подписки {formatted_date}. \nОтправлено сообщений: {user[2]}.\nОтправлено видео: {DBRepository.SentVideosCount(user[3])}\n\n'
+        return text
 DBConn = DBRepository()
