@@ -169,7 +169,8 @@ SELECT * FROM premium
 INNER JOIN users ON premium.user_id = users.id
 where premium.sent_texts_count=13 and users.external_id={external_id}
         '''
-        return len(over_cur.execute(over_query).fetchone())!=0
+        
+        return len(over_cur.execute(over_query).fetchall())!=0
 
     def GetStatisticForAdmin(self,):
         stat_query ='''
